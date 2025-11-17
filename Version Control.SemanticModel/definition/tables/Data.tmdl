@@ -1,0 +1,79 @@
+table Data
+	lineageTag: 8f6ba6cb-0a8e-4769-b87c-35ba3decbac3
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 322b2d27-82d5-42c3-ad08-5817d65879b5
+		summarizeBy: count
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Mm/dd/yyyy
+		lineageTag: 4f288043-13c8-480a-a77c-676c8136964c
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: e31d363c-2244-4a49-b3c6-b02032ee0d4a
+			defaultHierarchy: LocalDateTable_b890cba3-436c-4449-ad89-eb6dd1336432.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column Customer
+		dataType: string
+		lineageTag: 7ce574cf-c547-4ebf-881a-dc037aec74f9
+		summarizeBy: none
+		sourceColumn: Customer
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		lineageTag: 4c1ee85c-5ae0-4c71-8a46-b2b71d5453e1
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: faa11572-d2b6-4aeb-9a5c-7d21e3d61e3b
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Amount
+		dataType: int64
+		formatString: 0
+		lineageTag: 71d58c4f-67f9-4cd9-b453-9bdc6a1dc816
+		summarizeBy: sum
+		sourceColumn: Amount
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Data = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\UjjwalNibber\Downloads\sample_powerbi_data.xlsx"), null, true),
+				    SampleData_Sheet = Source{[Item="SampleData",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(SampleData_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"Date", type date}, {"Customer", type text}, {"Product", type text}, {"Quantity", Int64.Type}, {"Amount", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+
